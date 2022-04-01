@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import * as CountryHook from "../../hooks/CountryHook.mjs";
-import ReactSelect from "react-select";
+import * as ReactSelect from "react-select";
+import ReactSelect$1 from "react-select";
 
 function CountrySelect(Props) {
   var countriesState = CountryHook.use(undefined);
@@ -13,12 +14,17 @@ function CountrySelect(Props) {
       return React.createElement("div", undefined, "Fetching...");
     }
   } else {
-    return React.createElement(ReactSelect, {
+    return React.createElement(ReactSelect$1, {
+                filterOption: ReactSelect.createFilter({
+                      ignoreAccents: false
+                    }),
                 options: countriesState._0,
-                searchable: true,
                 formatOptionLabel: (function (thisOption) {
-                    return React.createElement("div", undefined, thisOption.label);
-                  })
+                    return React.createElement("div", undefined, React.createElement("span", {
+                                    className: "fi fi-" + thisOption.value
+                                  }), React.createElement("span", undefined, thisOption.label));
+                  }),
+                searchable: true
               });
   }
 }

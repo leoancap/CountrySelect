@@ -7,7 +7,12 @@ let make = () => {
     <ReactSelect
       options=countries
       searchable=true
-      formatOptionLabel={thisOption => <div> {thisOption.label->React.string} </div>}
+      filterOption={ReactSelect.createFilter({"ignoreAccents": false})}
+      formatOptionLabel={thisOption =>
+        <div>
+          <span className={`fi fi-${thisOption.value}`} />
+          <span> {thisOption.label->React.string} </span>
+        </div>}
     />
   | Fetching => <div> {React.string("Fetching...")} </div>
   | Error => <div> {React.string("Something went wrong :(")} </div>
