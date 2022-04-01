@@ -1,0 +1,8 @@
+{
+  "name": "Country-Select",
+  "reason": { "react-jsx": 3 },
+  "suffix": ".mjs",
+  "sources": [{ "dir": "src", "subdirs": true }],
+  "package-specs": [{ "module": "es6", "in-source": true }],
+  "bs-dependencies": ["@rescript/react"]
+}
