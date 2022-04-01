@@ -9,3 +9,6 @@ yarn-error.log
 .merlin
 lib/
 
+
+# Local Netlify folder
+.netlify
