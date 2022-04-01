@@ -5,20 +5,7 @@ type reactRoot
 module Main = {
   @react.component
   let make = () => {
-    let countriesState = CountryHook.use()
-
-    switch countriesState {
-    | Data(countries) =>
-      <ul>
-        {countries
-        ->Js.Array2.map(thisCountry =>
-          <li key=thisCountry.value> {thisCountry.label->React.string} </li>
-        )
-        ->React.array}
-      </ul>
-    | Fetching => <div> {React.string("Fetching...")} </div>
-    | Error => <div> {React.string("Something went wrong :(")} </div>
-    }
+    <CountrySelect />
   }
 }
 

@@ -3,24 +3,11 @@
 import * as React from "react";
 import * as Js_exn from "rescript/lib/es6/js_exn.js";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
-import * as CountryHook from "../../hooks/CountryHook.mjs";
+import * as CountrySelect from "../CountrySelect/CountrySelect.mjs";
 import * as Client from "react-dom/client";
 
 function App$Main(Props) {
-  var countriesState = CountryHook.use(undefined);
-  if (typeof countriesState === "number") {
-    if (countriesState !== 0) {
-      return React.createElement("div", undefined, "Something went wrong :(");
-    } else {
-      return React.createElement("div", undefined, "Fetching...");
-    }
-  } else {
-    return React.createElement("ul", undefined, countriesState._0.map(function (thisCountry) {
-                    return React.createElement("li", {
-                                key: thisCountry.value
-                              }, thisCountry.label);
-                  }));
-  }
+  return React.createElement(CountrySelect.make, {});
 }
 
 var Main = {
