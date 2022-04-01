@@ -1,13 +1,30 @@
-let app = ReactDOM.querySelector("#app")
+type reactRoot
+@module("react-dom/client") external createRoot: Dom.element => reactRoot = "createRoot"
+@send external render: (reactRoot, React.element) => unit = "render"
 
-type root
+module Main = {
+  @react.component
+  let make = () => {
+    let countriesState = CountryHook.use()
 
-@module("react-dom/client")
-external createRoot: Dom.element => root = "createRoot"
+    switch countriesState {
+    | Data(countries) =>
+      <ul>
+        {countries
+        ->Js.Array2.map(thisCountry =>
+          <li key=thisCountry.value> {thisCountry.label->React.string} </li>
+        )
+        ->React.array}
+      </ul>
+    | Fetching => <div> {React.string("Fetching...")} </div>
+    | Error => <div> {React.string("Something went wrong :(")} </div>
+    }
+  }
+}
 
-@send external render: (root, React.element) => unit = "render"
+let rootElement = ReactDOM.querySelector("#app")
 
-switch app {
-| Some(element) => createRoot(element)->render(<div> {React.string("Country Select")} </div>)
+switch rootElement {
+| Some(element) => createRoot(element)->render(<Main />)
 | None => Js.Exn.raiseError("No id #app found")
 }

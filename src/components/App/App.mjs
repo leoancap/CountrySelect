@@ -3,20 +3,43 @@
 import * as React from "react";
 import * as Js_exn from "rescript/lib/es6/js_exn.js";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
+import * as CountryHook from "../../hooks/CountryHook.mjs";
 import * as Client from "react-dom/client";
 
-var app = document.querySelector("#app");
+function App$Main(Props) {
+  var countriesState = CountryHook.use(undefined);
+  if (typeof countriesState === "number") {
+    if (countriesState !== 0) {
+      return React.createElement("div", undefined, "Something went wrong :(");
+    } else {
+      return React.createElement("div", undefined, "Fetching...");
+    }
+  } else {
+    return React.createElement("ul", undefined, countriesState._0.map(function (thisCountry) {
+                    return React.createElement("li", {
+                                key: thisCountry.value
+                              }, thisCountry.label);
+                  }));
+  }
+}
 
-if (app == null) {
+var Main = {
+  make: App$Main
+};
+
+var rootElement = document.querySelector("#app");
+
+if (rootElement == null) {
   Js_exn.raiseError("No id #app found");
 } else {
-  Client.createRoot(app).render(React.createElement("div", undefined, "Country Select"));
+  Client.createRoot(rootElement).render(React.createElement(App$Main, {}));
 }
 
-var app$1 = (app == null) ? undefined : Caml_option.some(app);
+var rootElement$1 = (rootElement == null) ? undefined : Caml_option.some(rootElement);
 
 export {
-  app$1 as app,
+  Main ,
+  rootElement$1 as rootElement,
   
 }
-/* app Not a pure module */
+/* rootElement Not a pure module */

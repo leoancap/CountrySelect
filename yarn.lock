@@ -274,6 +274,11 @@
     estree-walker "^2.0.1"
     picomatch "^2.2.2"
 
+"@ryyppy/rescript-promise@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@ryyppy/rescript-promise/-/rescript-promise-2.1.0.tgz#a33861274c41360cfbe872cf489f3dcb8dd526e6"
+  integrity sha512-+dW6msBrj2Lr2hbEMX+HoWCvN89qVjl94RwbYWJgHQuj8jm/izdPC0YzxgpGoEFdeAEW2sOozoLcYHxT6o5WXQ==
+
 "@vitejs/plugin-react@1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-1.3.0.tgz#efd4b4383edc12780cd8d230c2daa9d266690bb9"
@@ -611,6 +616,11 @@ react@18.0.0:
   integrity sha512-x+VL6wbT4JRVPm7EGxXhZ8w8LTROaxPXOqhlGyVSrv0sB1jkyFGgXxJ8LVoPRLvPR6/CIZGFmfzqUa2NYeMr2A==
   dependencies:
     loose-envify "^1.1.0"
+
+rescript-jzon@1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/rescript-jzon/-/rescript-jzon-1.3.0.tgz#8d47c6d0fd09083546ceb4a0c025f8a8ea567b95"
+  integrity sha512-1fKPg7xqx55PWWr+4Z6bImtfGIlGmgKIZjoIeoReXLDTuAOj2Zfr08Pl5eCLYATnOUINIAXWP4JbiZELtOzZ5g==
 
 rescript@9.1.4:
   version "9.1.4"
