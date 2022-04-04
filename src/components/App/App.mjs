@@ -7,7 +7,13 @@ import * as CountrySelect from "../CountrySelect/CountrySelect.mjs";
 import * as Client from "react-dom/client";
 
 function App$Main(Props) {
-  return React.createElement(CountrySelect.make, {});
+  return React.createElement(CountrySelect.make, {
+              onChange: (function (newValue) {
+                  console.log(newValue);
+                  
+                }),
+              value: undefined
+            });
 }
 
 var Main = {

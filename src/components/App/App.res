@@ -5,7 +5,7 @@ type reactRoot
 module Main = {
   @react.component
   let make = () => {
-    <CountrySelect />
+    <CountrySelect value=None onChange={newValue => Js.log({newValue})} />
   }
 }
 
