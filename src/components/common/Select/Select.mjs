@@ -165,22 +165,13 @@ function Select(Props) {
   var formatOptionLabel = Props.formatOptionLabel;
   var hideSelectedOptions = Props.hideSelectedOptions;
   var isClearable = Props.isClearable;
-  var onChangeOpt = Props.onChange;
+  var onChange = Props.onChange;
   var options = Props.options;
-  var valueOpt = Props.value;
-  var onChange = onChangeOpt !== undefined ? onChangeOpt : (function (param) {
-        
-      });
-  var value = valueOpt !== undefined ? Caml_option.valFromOption(valueOpt) : undefined;
+  var value = Props.value;
   var match = React.useState(function () {
         return false;
       });
   var setIsOpen = match[1];
-  var match$1 = React.useState(function () {
-        return value;
-      });
-  var setValue = match$1[1];
-  var value$1 = match$1[0];
   var toggleOpen = function (param) {
     return Curry._1(setIsOpen, (function (isOpen) {
                   return !isOpen;
@@ -190,47 +181,45 @@ function Select(Props) {
     Curry._1(setIsOpen, (function (isOpen) {
             return !isOpen;
           }));
-    var optionValue = (newValue == null) ? undefined : Caml_option.some(newValue);
-    Curry._1(setValue, (function (param) {
-            return optionValue;
-          }));
-    return Curry._1(onChange, optionValue);
+    return Curry._1(onChange, (newValue == null) ? undefined : Caml_option.some(newValue));
   };
-  var components = ReactSelect.createComponents((function (param) {
-          var focusedOption = param.focusedOption;
-          var children = param.children;
-          var rowCount = Array.isArray(children) ? children.length : 0;
-          var focusedOptionIndex = Array.isArray(children) ? children.findIndex(function (thisChild) {
-                  return Caml_obj.caml_equal(thisChild.props.data, focusedOption);
-                }) : 0;
-          return React.createElement(AutoSizer, {
-                      children: (function (param) {
-                          return React.createElement(List, {
-                                      rowRenderer: (function (param) {
-                                          var index = param.index;
-                                          return React.createElement("div", {
-                                                      key: index.toString(),
-                                                      style: param.style
-                                                    }, Array.isArray(children) ? Caml_array.get(children, index) : children);
-                                        }),
-                                      rowHeight: (function (param) {
-                                          return 35;
-                                        }),
-                                      height: 200,
-                                      scrollToIndex: focusedOptionIndex > 0 ? focusedOptionIndex : 0,
-                                      width: param.width,
-                                      rowCount: rowCount
-                                    });
-                        }),
-                      disableHeight: true
-                    });
-        }), (function (param) {
-          return null;
-        }), (function (param) {
-          return React.createElement(Select$DropdownIndicator, {});
-        }), (function (param) {
-          return null;
-        }), undefined);
+  var components = React.useMemo((function () {
+          return ReactSelect.createComponents((function (param) {
+                        var focusedOption = param.focusedOption;
+                        var children = param.children;
+                        var rowCount = Array.isArray(children) ? children.length : 0;
+                        var focusedOptionIndex = Array.isArray(children) ? children.findIndex(function (thisChild) {
+                                return Caml_obj.caml_equal(thisChild.props.data, focusedOption);
+                              }) : 0;
+                        return React.createElement(AutoSizer, {
+                                    children: (function (param) {
+                                        return React.createElement(List, {
+                                                    rowRenderer: (function (param) {
+                                                        var index = param.index;
+                                                        return React.createElement("div", {
+                                                                    key: index.toString(),
+                                                                    style: param.style
+                                                                  }, Array.isArray(children) ? Caml_array.get(children, index) : children);
+                                                      }),
+                                                    rowHeight: (function (param) {
+                                                        return 35;
+                                                      }),
+                                                    height: 200,
+                                                    scrollToIndex: focusedOptionIndex > 0 ? focusedOptionIndex : 0,
+                                                    width: param.width,
+                                                    rowCount: rowCount
+                                                  });
+                                      }),
+                                    disableHeight: true
+                                  });
+                      }), (function (param) {
+                        return null;
+                      }), (function (param) {
+                        return React.createElement(Select$DropdownIndicator, {});
+                      }), (function (param) {
+                        return null;
+                      }), undefined);
+        }), []);
   var tmp = {
     components: components,
     formatOptionLabel: formatOptionLabel,
@@ -243,7 +232,7 @@ function Select(Props) {
           return Object.assign({}, provided, {
                       height: "35px",
                       marginBottom: "8px",
-                      width: "230px",
+                      width: "370px",
                       flexDirection: "row-reverse"
                     });
         }),
@@ -252,8 +241,7 @@ function Select(Props) {
                   boxShadow: "inset 0 1px 0 rgba(0, 0, 0, 0.1)"
                 };
         })
-    },
-    value: value$1
+    }
   };
   if (autoFocus !== undefined) {
     tmp.autoFocus = autoFocus;
@@ -273,12 +261,15 @@ function Select(Props) {
   if (isClearable !== undefined) {
     tmp.isClearable = isClearable;
   }
+  if (value !== undefined) {
+    tmp.value = Caml_option.valFromOption(value);
+  }
   return React.createElement("div", undefined, React.createElement(Select$Dropdown, {
                   children: React.createElement(ReactSelect$1, tmp),
                   isOpen: match[0],
                   target: React.createElement("button", {
                         onClick: toggleOpen
-                      }, Curry._1(formatOptionLabel, value$1)),
+                      }, Curry._1(formatOptionLabel, value)),
                   onClose: toggleOpen
                 }));
 }

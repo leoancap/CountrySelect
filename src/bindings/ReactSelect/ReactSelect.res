@@ -59,5 +59,5 @@ external make: (
   ~placeholder: React.element=?,
   ~searchable: bool=?,
   ~styles: selectStyles=?,
-  ~value: option<'a>,
+  ~value: option<'a>=?,
 ) => React.element = "default"

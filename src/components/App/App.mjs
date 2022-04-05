@@ -6,32 +6,24 @@ import * as Caml_option from "rescript/lib/es6/caml_option.js";
 import * as CountrySelect from "../CountrySelect/CountrySelect.mjs";
 import * as Client from "react-dom/client";
 
-function App$Main(Props) {
-  return React.createElement(CountrySelect.make, {
-              onChange: (function (newValue) {
-                  console.log(newValue);
-                  
-                }),
-              value: undefined
-            });
-}
-
-var Main = {
-  make: App$Main
-};
-
 var rootElement = document.querySelector("#app");
 
 if (rootElement == null) {
   Js_exn.raiseError("No id #app found");
 } else {
-  Client.createRoot(rootElement).render(React.createElement(App$Main, {}));
+  Client.createRoot(rootElement).render(React.createElement(CountrySelect.make, {
+            onChange: (function (newCountry) {
+                console.log(newCountry);
+                
+              }),
+            country: "us",
+            className: "custom-class"
+          }));
 }
 
 var rootElement$1 = (rootElement == null) ? undefined : Caml_option.some(rootElement);
 
 export {
-  Main ,
   rootElement$1 as rootElement,
   
 }

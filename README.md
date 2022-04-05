@@ -26,6 +26,11 @@ Install dependencies:
  yarn dev
 ```
 
+## Libraries
+
+* Rescript   (rescript-jzon, bs-css, rescript-promise)
+* Javascript (react-select, react-virtualized, flag-icons)
+
 ## Scripts
 
 | Script       | Description                                                   |

@@ -83,6 +83,7 @@ module ChevronDown = {
     </Svg>
   }
 }
+
 @react.component
 let make = (
   ~autoFocus=?,
@@ -92,56 +93,55 @@ let make = (
   ~formatOptionLabel,
   ~hideSelectedOptions=?,
   ~isClearable=?,
-  ~onChange=_ => (),
+  ~onChange,
   ~options,
-  ~value=None,
+  ~value,
 ) => {
   let (isOpen, setIsOpen) = React.useState(_ => false)
-  let (value, setValue) = React.useState(_ => value)
   let toggleOpen = _ => {
     setIsOpen(isOpen => !isOpen)
   }
   let onSelectChange = newValue => {
     toggleOpen()
-    let optionValue = Js.Nullable.toOption(newValue)
-    setValue(_ => optionValue)
-    onChange(optionValue)
+    newValue->Js.Nullable.toOption->onChange
   }
 
-  let components = ReactSelect.createComponents(
-    ~menuList=({children, focusedOption}) => {
-      let rowCount = children->Js.Array2.isArray ? children->Js.Array2.length : 0
-      let focusedOptionIndex =
-        children->Js.Array2.isArray
-          ? children->Js.Array2.findIndex(thisChild => {
-              let thisOption = ReactSelect.convertChildToOption(thisChild)
-              thisOption.props.data == focusedOption
-            })
-          : 0
-      <ReactVirtualized.AutoSizer disableHeight=true>
-        {({width}) =>
-          <ReactVirtualized.List
-            height={200}
-            width
-            rowCount
-            rowHeight={_ => 35}
-            scrollToIndex={focusedOptionIndex > 0 ? focusedOptionIndex : 0}
-            rowRenderer={({index, style}) => {
-              <div key={index->Js.Int.toString} style={style}>
-                {if children->Js.Array2.isArray {
-                  children[index]
-                } else {
-                  children->React.array
-                }}
-              </div>
-            }}
-          />}
-      </ReactVirtualized.AutoSizer>
-    },
-    ~dropdownIndicator=() => <DropdownIndicator />,
-    ~indicatorSeparator=() => React.null,
-    ~clearIndicator=() => React.null,
-    (),
+  let components = React.useMemo0(() =>
+    ReactSelect.createComponents(
+      ~menuList=({children, focusedOption}) => {
+        let rowCount = children->Js.Array2.isArray ? children->Js.Array2.length : 0
+        let focusedOptionIndex =
+          children->Js.Array2.isArray
+            ? children->Js.Array2.findIndex(thisChild => {
+                let thisOption = ReactSelect.convertChildToOption(thisChild)
+                thisOption.props.data == focusedOption
+              })
+            : 0
+        <ReactVirtualized.AutoSizer disableHeight=true>
+          {({width}) =>
+            <ReactVirtualized.List
+              height={200}
+              width
+              rowCount
+              rowHeight={_ => 35}
+              scrollToIndex={focusedOptionIndex > 0 ? focusedOptionIndex : 0}
+              rowRenderer={({index, style}) => {
+                <div key={index->Js.Int.toString} style={style}>
+                  {if children->Js.Array2.isArray {
+                    children[index]
+                  } else {
+                    children->React.array
+                  }}
+                </div>
+              }}
+            />}
+        </ReactVirtualized.AutoSizer>
+      },
+      ~dropdownIndicator=() => <DropdownIndicator />,
+      ~indicatorSeparator=() => React.null,
+      ~clearIndicator=() => React.null,
+      (),
+    )
   )
 
   <div>
@@ -165,23 +165,21 @@ let make = (
         styles={ReactSelect.createSelectStyles(
           (),
           ~menu={() => ReactDOMStyle.make(~boxShadow="inset 0 1px 0 rgba(0, 0, 0, 0.1)", ())},
-          ~control={
-            provided => {
-              open ReactDOMStyle
-              combine(
-                provided,
-                make(
-                  ~width="230px",
-                  ~height="35px",
-                  ~flexDirection="row-reverse",
-                  ~marginBottom="8px",
-                  (),
-                ),
-              )
-            }
+          ~control=provided => {
+            open ReactDOMStyle
+            combine(
+              provided,
+              make(
+                ~width="370px",
+                ~height="35px",
+                ~flexDirection="row-reverse",
+                ~marginBottom="8px",
+                (),
+              ),
+            )
           },
         )}
-        value
+        ?value
       />
     </Dropdown>
   </div>
