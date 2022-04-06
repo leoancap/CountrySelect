@@ -34,20 +34,8 @@ module Dropdown = {
   @react.component
   let make = (~children, ~isOpen, ~target, ~onClose) => {
     <div className>
-      {target}
-      {isOpen ? <Menu> children </Menu> : React.null}
-      {isOpen ? <Backdrop onClick=onClose /> : React.null}
+      {target} {isOpen ? <> <Menu> children </Menu> <Backdrop onClick=onClose /> </> : React.null}
     </div>
-  }
-}
-
-module Svg = {
-  @react.component
-  let make = (~className=?, ~children) => {
-    <svg
-      ?className width="32" height="32" viewBox="-8 -8 24 24" focusable="false" role="presentation">
-      children
-    </svg>
   }
 }
 
@@ -57,30 +45,26 @@ module DropdownIndicator = {
   @react.component
   let make = () => {
     <div className>
-      <Svg>
+      <svg width="32" height="32" viewBox="-8 -8 24 24" focusable="false" role="presentation">
         <path
           fillRule="evenodd"
           clipRule="evenodd"
           d="M10 5C10 6.01927 9.69501 6.96731 9.17131 7.75783L12.47 11.06L11.06 12.47L7.75786 9.17129C6.96734 9.695 6.01929 10 5 10C2.23858 10 0 7.76142 0 5C0 2.23858 2.23858 0 5 0C7.76142 0 10 2.23858 10 5ZM5 8.2C6.76731 8.2 8.2 6.76731 8.2 5C8.2 3.23269 6.76731 1.8 5 1.8C3.23269 1.8 1.8 3.23269 1.8 5C1.8 6.76731 3.23269 8.2 5 8.2Z"
           fill="#333333"
         />
-      </Svg>
+      </svg>
     </div>
   }
 }
 
 module ChevronDown = {
-  let className = CssJs.style(. [marginRight(-6->#px)])
+  let className = CssJs.style(. [display(#flex), height(28->#px)])
 
   @react.component
   let make = () => {
-    <Svg className>
-      <path
-        d="M8.292 10.293a1.009 1.009 0 0 0 0 1.419l2.939 2.965c.218.215.5.322.779.322s.556-.107.769-.322l2.93-2.955a1.01 1.01 0 0 0 0-1.419.987.987 0 0 0-1.406 0l-2.298 2.317-2.307-2.327a.99.99 0 0 0-1.406 0z"
-        fill="currentColor"
-        fillRule="evenodd"
-      />
-    </Svg>
+    <svg width="8" height="8" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fillRule="evenodd" clipRule="evenodd" d="M0 0H8L4 5L0 0Z" fill="#333333" />
+    </svg>
   }
 }
 
@@ -102,7 +86,6 @@ let make = (
     setIsOpen(isOpen => !isOpen)
   }
   let onSelectChange = newValue => {
-    toggleOpen()
     newValue->Js.Nullable.toOption->onChange
   }
 
@@ -148,7 +131,18 @@ let make = (
     <Dropdown
       isOpen
       onClose={toggleOpen}
-      target={<button onClick={toggleOpen}> {formatOptionLabel(value)} </button>}>
+      target={<Button
+        onKeyDown={e =>
+          switch e->ReactEvent.Keyboard.key {
+          | "Backspace"
+          | "Escape" =>
+            onSelectChange(Js.Nullable.null)
+          | _ => ()
+          }}
+        itemRight={<ChevronDown />}
+        onClick={toggleOpen}>
+        {formatOptionLabel(value)}
+      </Button>}>
       <ReactSelect
         ?autoFocus
         ?backspaceRemovesValue
@@ -159,7 +153,10 @@ let make = (
         components
         formatOptionLabel
         menuIsOpen={true}
-        onChange={onSelectChange}
+        onChange={newValue => {
+          toggleOpen()
+          onSelectChange(newValue)
+        }}
         options
         placeholder={"Search"->React.string}
         styles={ReactSelect.createSelectStyles(

@@ -3,6 +3,7 @@
 import * as CssJs from "bs-css-emotion/src/CssJs.mjs";
 import * as Curry from "rescript/lib/es6/curry.js";
 import * as React from "react";
+import * as Button from "../Button/Button.mjs";
 import * as Caml_obj from "rescript/lib/es6/caml_obj.js";
 import * as Caml_array from "rescript/lib/es6/caml_array.js";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
@@ -71,36 +72,16 @@ function Select$Dropdown(Props) {
   var onClose = Props.onClose;
   return React.createElement("div", {
               className: className$2
-            }, target, isOpen ? React.createElement(Select$Menu, {
-                    children: children
-                  }) : null, isOpen ? React.createElement(Select$Backdrop, {
-                    onClick: onClose
-                  }) : null);
+            }, target, isOpen ? React.createElement(React.Fragment, undefined, React.createElement(Select$Menu, {
+                        children: children
+                      }), React.createElement(Select$Backdrop, {
+                        onClick: onClose
+                      })) : null);
 }
 
 var Dropdown = {
   className: className$2,
   make: Select$Dropdown
-};
-
-function Select$Svg(Props) {
-  var className = Props.className;
-  var children = Props.children;
-  var tmp = {
-    role: "presentation",
-    height: "32",
-    width: "32",
-    focusable: "false",
-    viewBox: "-8 -8 24 24"
-  };
-  if (className !== undefined) {
-    tmp.className = Caml_option.valFromOption(className);
-  }
-  return React.createElement("svg", tmp, children);
-}
-
-var Svg = {
-  make: Select$Svg
 };
 
 var className$3 = CssJs.style([
@@ -121,14 +102,18 @@ var className$3 = CssJs.style([
 function Select$DropdownIndicator(Props) {
   return React.createElement("div", {
               className: className$3
-            }, React.createElement(Select$Svg, {
-                  children: React.createElement("path", {
-                        clipRule: "evenodd",
-                        d: "M10 5C10 6.01927 9.69501 6.96731 9.17131 7.75783L12.47 11.06L11.06 12.47L7.75786 9.17129C6.96734 9.695 6.01929 10 5 10C2.23858 10 0 7.76142 0 5C0 2.23858 2.23858 0 5 0C7.76142 0 10 2.23858 10 5ZM5 8.2C6.76731 8.2 8.2 6.76731 8.2 5C8.2 3.23269 6.76731 1.8 5 1.8C3.23269 1.8 1.8 3.23269 1.8 5C1.8 6.76731 3.23269 8.2 5 8.2Z",
-                        fill: "#333333",
-                        fillRule: "evenodd"
-                      })
-                }));
+            }, React.createElement("svg", {
+                  role: "presentation",
+                  height: "32",
+                  width: "32",
+                  focusable: "false",
+                  viewBox: "-8 -8 24 24"
+                }, React.createElement("path", {
+                      clipRule: "evenodd",
+                      d: "M10 5C10 6.01927 9.69501 6.96731 9.17131 7.75783L12.47 11.06L11.06 12.47L7.75786 9.17129C6.96734 9.695 6.01929 10 5 10C2.23858 10 0 7.76142 0 5C0 2.23858 2.23858 0 5 0C7.76142 0 10 2.23858 10 5ZM5 8.2C6.76731 8.2 8.2 6.76731 8.2 5C8.2 3.23269 6.76731 1.8 5 1.8C3.23269 1.8 1.8 3.23269 1.8 5C1.8 6.76731 3.23269 8.2 5 8.2Z",
+                      fill: "#333333",
+                      fillRule: "evenodd"
+                    })));
 }
 
 var DropdownIndicator = {
@@ -136,20 +121,27 @@ var DropdownIndicator = {
   make: Select$DropdownIndicator
 };
 
-var className$4 = CssJs.style([CssJs.marginRight({
+var className$4 = CssJs.style([
+      CssJs.display("flex"),
+      CssJs.height({
             NAME: "px",
-            VAL: -6
-          })]);
+            VAL: 28
+          })
+    ]);
 
 function Select$ChevronDown(Props) {
-  return React.createElement(Select$Svg, {
-              className: className$4,
-              children: React.createElement("path", {
-                    d: "M8.292 10.293a1.009 1.009 0 0 0 0 1.419l2.939 2.965c.218.215.5.322.779.322s.556-.107.769-.322l2.93-2.955a1.01 1.01 0 0 0 0-1.419.987.987 0 0 0-1.406 0l-2.298 2.317-2.307-2.327a.99.99 0 0 0-1.406 0z",
-                    fill: "currentColor",
-                    fillRule: "evenodd"
-                  })
-            });
+  return React.createElement("svg", {
+              height: "8",
+              width: "8",
+              fill: "none",
+              viewBox: "0 0 8 5",
+              xmlns: "http://www.w3.org/2000/svg"
+            }, React.createElement("path", {
+                  clipRule: "evenodd",
+                  d: "M0 0H8L4 5L0 0Z",
+                  fill: "#333333",
+                  fillRule: "evenodd"
+                }));
 }
 
 var ChevronDown = {
@@ -176,12 +168,6 @@ function Select(Props) {
     return Curry._1(setIsOpen, (function (isOpen) {
                   return !isOpen;
                 }));
-  };
-  var onSelectChange = function (newValue) {
-    Curry._1(setIsOpen, (function (isOpen) {
-            return !isOpen;
-          }));
-    return Curry._1(onChange, (newValue == null) ? undefined : Caml_option.some(newValue));
   };
   var components = React.useMemo((function () {
           return ReactSelect.createComponents((function (param) {
@@ -224,7 +210,12 @@ function Select(Props) {
     components: components,
     formatOptionLabel: formatOptionLabel,
     menuIsOpen: true,
-    onChange: onSelectChange,
+    onChange: (function (newValue) {
+        Curry._1(setIsOpen, (function (isOpen) {
+                return !isOpen;
+              }));
+        return Curry._1(onChange, (newValue == null) ? undefined : Caml_option.some(newValue));
+      }),
     options: options,
     placeholder: "Search",
     styles: {
@@ -267,9 +258,21 @@ function Select(Props) {
   return React.createElement("div", undefined, React.createElement(Select$Dropdown, {
                   children: React.createElement(ReactSelect$1, tmp),
                   isOpen: match[0],
-                  target: React.createElement("button", {
-                        onClick: toggleOpen
-                      }, Curry._1(formatOptionLabel, value)),
+                  target: React.createElement(Button.make, {
+                        onClick: toggleOpen,
+                        onKeyDown: (function (e) {
+                            var match = e.key;
+                            switch (match) {
+                              case "Backspace" :
+                              case "Escape" :
+                                  return Curry._1(onChange, undefined);
+                              default:
+                                return ;
+                            }
+                          }),
+                        itemRight: React.createElement(Select$ChevronDown, {}),
+                        children: Curry._1(formatOptionLabel, value)
+                      }),
                   onClose: toggleOpen
                 }));
 }
@@ -280,7 +283,6 @@ export {
   Menu ,
   Backdrop ,
   Dropdown ,
-  Svg ,
   DropdownIndicator ,
   ChevronDown ,
   make ,
