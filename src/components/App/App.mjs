@@ -16,7 +16,7 @@ if (rootElement == null) {
                 console.log(newCountry);
                 
               }),
-            country: "us",
+            country: "sg",
             className: "custom-class"
           }));
 }

@@ -85,10 +85,6 @@ var Dropdown = {
 };
 
 var className$3 = CssJs.style([
-      CssJs.color({
-            NAME: "var",
-            VAL: "tomato"
-          }),
       CssJs.height({
             NAME: "px",
             VAL: -24
@@ -149,6 +145,27 @@ var ChevronDown = {
   make: Select$ChevronDown
 };
 
+var className$5 = CssJs.style([
+      CssJs.display("flex"),
+      CssJs.justifyContent("center"),
+      CssJs.alignItems("center"),
+      CssJs.height({
+            NAME: "px",
+            VAL: 35
+          })
+    ]);
+
+function Select$NoOptions(Props) {
+  return React.createElement("div", {
+              className: className$5
+            }, React.createElement("span", undefined, "No Options"));
+}
+
+var NoOptions = {
+  className: className$5,
+  make: Select$NoOptions
+};
+
 function Select(Props) {
   var autoFocus = Props.autoFocus;
   var backspaceRemovesValue = Props.backspaceRemovesValue;
@@ -172,11 +189,13 @@ function Select(Props) {
   var components = React.useMemo((function () {
           return ReactSelect.createComponents((function (param) {
                         var focusedOption = param.focusedOption;
-                        var children = param.children;
-                        var rowCount = Array.isArray(children) ? children.length : 0;
-                        var focusedOptionIndex = Array.isArray(children) ? children.findIndex(function (thisChild) {
-                                return Caml_obj.caml_equal(thisChild.props.data, focusedOption);
-                              }) : 0;
+                        var options = ReactSelect.ChildrenOptions.checkHasOptions(param.children);
+                        if (options === undefined) {
+                          return React.createElement(Select$NoOptions, {});
+                        }
+                        var focusedOptionIndex = options.findIndex(function (thisChild) {
+                              return Caml_obj.caml_equal(thisChild.props.data, focusedOption);
+                            });
                         return React.createElement(AutoSizer, {
                                     children: (function (param) {
                                         return React.createElement(List, {
@@ -185,7 +204,7 @@ function Select(Props) {
                                                         return React.createElement("div", {
                                                                     key: index.toString(),
                                                                     style: param.style
-                                                                  }, Array.isArray(children) ? Caml_array.get(children, index) : children);
+                                                                  }, Caml_array.get(options, index));
                                                       }),
                                                     rowHeight: (function (param) {
                                                         return 35;
@@ -193,7 +212,7 @@ function Select(Props) {
                                                     height: 200,
                                                     scrollToIndex: focusedOptionIndex > 0 ? focusedOptionIndex : 0,
                                                     width: param.width,
-                                                    rowCount: rowCount
+                                                    rowCount: options.length
                                                   });
                                       }),
                                     disableHeight: true
@@ -204,6 +223,9 @@ function Select(Props) {
                         return React.createElement(Select$DropdownIndicator, {});
                       }), (function (param) {
                         return null;
+                      }), (function (pr) {
+                        console.log("asdf", pr);
+                        return "-------------No option";
                       }), undefined);
         }), []);
   var tmp = {
@@ -285,6 +307,7 @@ export {
   Dropdown ,
   DropdownIndicator ,
   ChevronDown ,
+  NoOptions ,
   make ,
   
 }

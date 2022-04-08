@@ -40,7 +40,7 @@ module Dropdown = {
 }
 
 module DropdownIndicator = {
-  let className = style(. [color(#var("tomato")), height(-24->#px), height(-32->#px)])
+  let className = style(. [height(-24->#px), height(-32->#px)])
 
   @react.component
   let make = () => {
@@ -68,6 +68,20 @@ module ChevronDown = {
   }
 }
 
+module NoOptions = {
+  let className = CssJs.style(. [
+    display(#flex),
+    justifyContent(#center),
+    alignItems(#center),
+    height(35->#px),
+  ])
+
+  @react.component
+  let make = () => {
+    <div className> <span> {"No Options"->React.string} </span> </div>
+  }
+}
+
 @react.component
 let make = (
   ~autoFocus=?,
@@ -92,37 +106,39 @@ let make = (
   let components = React.useMemo0(() =>
     ReactSelect.createComponents(
       ~menuList=({children, focusedOption}) => {
-        let rowCount = children->Js.Array2.isArray ? children->Js.Array2.length : 0
-        let focusedOptionIndex =
-          children->Js.Array2.isArray
-            ? children->Js.Array2.findIndex(thisChild => {
-                let thisOption = ReactSelect.convertChildToOption(thisChild)
-                thisOption.props.data == focusedOption
-              })
-            : 0
-        <ReactVirtualized.AutoSizer disableHeight=true>
-          {({width}) =>
-            <ReactVirtualized.List
-              height={200}
-              width
-              rowCount
-              rowHeight={_ => 35}
-              scrollToIndex={focusedOptionIndex > 0 ? focusedOptionIndex : 0}
-              rowRenderer={({index, style}) => {
-                <div key={index->Js.Int.toString} style={style}>
-                  {if children->Js.Array2.isArray {
-                    children[index]
-                  } else {
-                    children->React.array
+        switch children->ReactSelect.ChildrenOptions.checkHasOptions {
+        | None => <NoOptions />
+        | Some(options) => {
+            let focusedOptionIndex = options->Js.Array2.findIndex(thisChild => {
+              let thisOption = ReactSelect.convertChildToOption(thisChild)
+              thisOption.props.data == focusedOption
+            })
+
+            <ReactVirtualized.AutoSizer disableHeight=true>
+              {({width}) =>
+                <ReactVirtualized.List
+                  height={200}
+                  width
+                  rowCount={options->Js.Array2.length}
+                  rowHeight={_ => 35}
+                  scrollToIndex={focusedOptionIndex > 0 ? focusedOptionIndex : 0}
+                  rowRenderer={({index, style}) => {
+                    <div key={index->Js.Int.toString} style={style}> {options[index]} </div>
                   }}
-                </div>
-              }}
-            />}
-        </ReactVirtualized.AutoSizer>
+                />}
+            </ReactVirtualized.AutoSizer>
+          }
+        }
       },
       ~dropdownIndicator=() => <DropdownIndicator />,
       ~indicatorSeparator=() => React.null,
       ~clearIndicator=() => React.null,
+      ~noOptionsMessage={
+        pr => {
+          Js.log2("asdf", {pr})
+          "-------------No option"->React.string
+        }
+      },
       (),
     )
   )

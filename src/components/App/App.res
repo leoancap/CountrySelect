@@ -8,7 +8,7 @@ switch rootElement {
 | Some(element) =>
   createRoot(element)->render(
     <CountrySelect
-      className="custom-class" country=Some("us") onChange={newCountry => Js.log({newCountry})}
+      className="custom-class" country=Some("sg") onChange={newCountry => Js.log({newCountry})}
     />,
   )
 | None => Js.Exn.raiseError("No id #app found")

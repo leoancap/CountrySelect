@@ -1,5 +1,16 @@
+type innerProps<'a> = {data: 'a}
+type innerElement<'a> = {props: innerProps<'a>}
+external convertChildToOption: React.element => innerElement<'a> = "%identity"
+
+module ChildrenOptions = {
+  type t = option<array<React.element>>
+  external convertToOptions: t => array<React.element> = "%identity"
+  let checkHasOptions = children =>
+    children->Js.Array2.isArray ? Some(children->convertToOptions) : None
+}
+
 type menuListProps<'a> = {
-  children: array<React.element>,
+  children: ChildrenOptions.t,
   focusedOption: 'a,
   options: array<'a>,
   maxHeight: int,
@@ -11,6 +22,7 @@ type components<'a> = {
   "DropdownIndicator": option<unit => React.element>,
   "IndicatorSeparator": option<unit => React.element>,
   "ClearIndicator": option<unit => React.element>,
+  "NoOptionsMessage": option<unit => React.element>,
 }
 
 let createComponents = (
@@ -18,6 +30,7 @@ let createComponents = (
   ~clearIndicator=?,
   ~dropdownIndicator=?,
   ~indicatorSeparator=?,
+  ~noOptionsMessage=?,
   (),
 ): components<'a> => {
   {
@@ -25,6 +38,7 @@ let createComponents = (
     "DropdownIndicator": dropdownIndicator,
     "IndicatorSeparator": indicatorSeparator,
     "ClearIndicator": clearIndicator,
+    "NoOptionsMessage": noOptionsMessage,
   }
 }
 type selectStyles = {"control": ReactDOMStyle.t => ReactDOMStyle.t, "menu": unit => ReactDOMStyle.t}
@@ -36,10 +50,6 @@ external createSelectStyles: (
   unit,
 ) => selectStyles = ""
 
-type innerProps<'a> = {data: 'a}
-type innerElement<'a> = {props: innerProps<'a>}
-external convertChildToOption: React.element => innerElement<'a> = "%identity"
-
 @module("react-select") @react.component
 external make: (
   ~autoFocus: bool=?,
@@ -49,6 +59,7 @@ external make: (
   ~components: components<'a>=?,
   ~controlShouldRenderValue: bool=?,
   ~formatOptionLabel: option<'a> => React.element=?,
+  ~noOptionsMessage: option<'a> => React.element=?,
   ~hideSelectedOptions: bool=?,
   ~isClearable: bool=?,
   ~escapeClearsValue: bool=?,
