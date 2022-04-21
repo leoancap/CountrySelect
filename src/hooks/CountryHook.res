@@ -2,10 +2,12 @@ let url = "https://gist.githubusercontent.com/rusty-key/659db3f4566df459bd59c8a5
 
 let countryListCodec = Jzon.array(CountryTypes.codec)
 
+type error_type = ServerError | DecodeError
+
 type state =
   | Data(array<CountryTypes.t>)
   | Fetching
-  | Error
+  | NonIdealState(error_type)
 
 let use = () => {
   let (countries, setCountries) = React.useState(_ => Fetching)
@@ -13,14 +15,15 @@ let use = () => {
   React.useEffect0(() => {
     open Promise
 
-    Fetch.get(url)
-    ->thenResolve(json =>
-      switch json->Jzon.decodeWith(countryListCodec) {
-      | Ok(countries) => setCountries(_ => Data(countries))
-      | Error(_) => setCountries(_ => Error)
-      }
-    )
-    ->ignore
+    let _ =
+      Fetch.get(url)
+      ->thenResolve(json =>
+        switch json->Jzon.decodeWith(countryListCodec) {
+        | Ok(countries) => setCountries(_ => Data(countries))
+        | Error(_) => setCountries(_ => NonIdealState(DecodeError))
+        }
+      )
+      ->catch(_ => setCountries(_ => NonIdealState(ServerError))->resolve)
 
     None
   })

@@ -2,6 +2,7 @@
 
 import * as CssJs from "bs-css-emotion/src/CssJs.mjs";
 import * as Curry from "rescript/lib/es6/curry.js";
+import * as Theme from "../../Styles/Theme.mjs";
 import * as React from "react";
 import * as Select from "../common/Select/Select.mjs";
 import * as Belt_Option from "rescript/lib/es6/belt_Option.js";
@@ -12,7 +13,7 @@ var countryLabelStyles = CssJs.style([
       CssJs.display("flex"),
       CssJs.gap({
             NAME: "px",
-            VAL: 8
+            VAL: Theme.Spacing.sm
           })
     ]);
 
@@ -25,9 +26,9 @@ function renderCountryLabel(optionCountry) {
 }
 
 function getCountryByCode(countries, code) {
-  return Belt_Option.flatMap(code, (function (code) {
-                return Caml_option.undefined_to_opt(countries.find(function (thisCountry) {
-                                return thisCountry.value === code;
+  return Belt_Option.flatMap(code, (function (_code) {
+                return Caml_option.undefined_to_opt(countries.find(function (_country) {
+                                return _country.value === _code;
                               }));
               }));
 }
@@ -41,19 +42,22 @@ function CountrySelect(Props) {
         return country;
       });
   var setCountryCode = match[1];
-  var onCountryChange = React.useCallback((function (newCountry) {
+  var onCountryChange = React.useCallback((function (_country) {
           Curry._1(setCountryCode, (function (param) {
-                  return Belt_Option.map(newCountry, (function (country) {
+                  return Belt_Option.map(_country, (function (country) {
                                 return country.value;
                               }));
                 }));
-          return Curry._1(onChange, newCountry);
+          return Curry._1(onChange, _country);
         }), []);
   if (typeof countriesState === "number") {
-    if (countriesState !== 0) {
-      return React.createElement("div", undefined, "Something went wrong :(");
+    return React.createElement("div", undefined, "Fetching...");
+  }
+  if (countriesState.TAG !== /* Data */0) {
+    if (countriesState._0) {
+      return React.createElement("div", undefined, "Data has been corrupted");
     } else {
-      return React.createElement("div", undefined, "Fetching...");
+      return React.createElement("div", undefined, "Server Error ");
     }
   }
   var countries = countriesState._0;

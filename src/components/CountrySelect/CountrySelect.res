@@ -1,7 +1,7 @@
 open CountryTypes
 open CssJs
 
-let countryLabelStyles = style(. [display(#flex), gap(8->#px)])
+let countryLabelStyles = style(. [display(#flex), gap(Theme.Spacing.sm->#px)])
 
 let renderCountryLabel = optionCountry => {
   <div className=countryLabelStyles>
@@ -14,11 +14,8 @@ let renderCountryLabel = optionCountry => {
   </div>
 }
 
-let getCountryByCode = (countries, code) => {
-  Belt.Option.flatMap(code, code => {
-    countries->Js.Array2.find(thisCountry => thisCountry.value == code)
-  })
-}
+let getCountryByCode = (countries, code) =>
+  Belt.Option.flatMap(code, _code => countries->Js.Array2.find(_country => _country.value == _code))
 
 @react.component
 let make = (~onChange, ~country, ~className=?) => {
@@ -26,9 +23,9 @@ let make = (~onChange, ~country, ~className=?) => {
 
   let (countryCode, setCountryCode) = React.useState(_ => country)
 
-  let onCountryChange = React.useCallback0(newCountry => {
-    setCountryCode(_ => newCountry->Belt.Option.map(country => country.value))
-    onChange(newCountry)
+  let onCountryChange = React.useCallback0(_country => {
+    setCountryCode(_ => _country->Belt.Option.map(country => country.value))
+    onChange(_country)
   })
 
   switch countriesState {
@@ -46,6 +43,10 @@ let make = (~onChange, ~country, ~className=?) => {
       options={countries}
     />
   | Fetching => <div> {React.string("Fetching...")} </div>
-  | Error => <div> {React.string("Something went wrong :(")} </div>
+  | NonIdealState(error) =>
+    switch error {
+    | ServerError => <div> {React.string("Server Error ")} </div>
+    | DecodeError => <div> {React.string("Data has been corrupted")} </div>
+    }
   }
 }

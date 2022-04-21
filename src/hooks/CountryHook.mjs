@@ -4,6 +4,7 @@ import * as Jzon from "rescript-jzon/src/Jzon.mjs";
 import * as Curry from "rescript/lib/es6/curry.js";
 import * as Fetch from "../bindings/Fetch/Fetch.mjs";
 import * as React from "react";
+import * as $$Promise from "@ryyppy/rescript-promise/src/Promise.mjs";
 import * as CountryTypes from "../types/CountryTypes.mjs";
 
 var url = "https://gist.githubusercontent.com/rusty-key/659db3f4566df459bd59c8a53dc9f71f/raw/4127f9550ef063121c564025f6d27dceeb279623/counties.json";
@@ -16,20 +17,31 @@ function use(param) {
       });
   var setCountries = match[1];
   React.useEffect((function () {
-          Fetch.get(url).then(function (json) {
-                var countries = Jzon.decodeWith(json, countryListCodec);
-                if (countries.TAG !== /* Ok */0) {
-                  return Curry._1(setCountries, (function (param) {
-                                return /* Error */1;
-                              }));
-                }
-                var countries$1 = countries._0;
-                return Curry._1(setCountries, (function (param) {
-                              return /* Data */{
-                                      _0: countries$1
-                                    };
-                            }));
-              });
+          $$Promise.$$catch(Fetch.get(url).then(function (json) {
+                    var countries = Jzon.decodeWith(json, countryListCodec);
+                    if (countries.TAG !== /* Ok */0) {
+                      return Curry._1(setCountries, (function (param) {
+                                    return {
+                                            TAG: /* NonIdealState */1,
+                                            _0: /* DecodeError */1
+                                          };
+                                  }));
+                    }
+                    var countries$1 = countries._0;
+                    return Curry._1(setCountries, (function (param) {
+                                  return {
+                                          TAG: /* Data */0,
+                                          _0: countries$1
+                                        };
+                                }));
+                  }), (function (param) {
+                  return Promise.resolve(Curry._1(setCountries, (function (param) {
+                                    return {
+                                            TAG: /* NonIdealState */1,
+                                            _0: /* ServerError */0
+                                          };
+                                  })));
+                }));
           
         }), []);
   return match[0];
