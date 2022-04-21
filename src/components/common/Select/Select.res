@@ -1,10 +1,11 @@
 open CssJs
+open Theme
 
 module Menu = {
   let className = style(. [
     position(#absolute),
-    marginTop(8->#px),
-    borderRadius(4->#px),
+    marginTop(Spacing.sm->#px),
+    borderRadius(Radius.sm->#px),
     backgroundColor(#hex("ffffff")),
     zIndex(2),
   ])
@@ -40,12 +41,17 @@ module Dropdown = {
 }
 
 module DropdownIndicator = {
-  let className = style(. [height(-24->#px), height(-32->#px)])
+  let className = style(. [height(-Spacing.sm_4->#px), height(-Spacing.sm_4->#px)])
 
   @react.component
   let make = () => {
     <div className>
-      <svg width="32" height="32" viewBox="-8 -8 24 24" focusable="false" role="presentation">
+      <svg
+        width={Spacing.sm_4->Belt.Int.toString}
+        height={Spacing.sm_4->Belt.Int.toString}
+        viewBox="-8 -8 24 24"
+        focusable="false"
+        role="presentation">
         <path
           fillRule="evenodd"
           clipRule="evenodd"
@@ -58,11 +64,14 @@ module DropdownIndicator = {
 }
 
 module ChevronDown = {
-  let className = CssJs.style(. [display(#flex), height(28->#px)])
-
   @react.component
   let make = () => {
-    <svg width="8" height="8" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width=Spacing.sm_s
+      height=Spacing.sm_s
+      viewBox="0 0 8 5"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
       <path fillRule="evenodd" clipRule="evenodd" d="M0 0H8L4 5L0 0Z" fill="#333333" />
     </svg>
   }
@@ -73,7 +82,7 @@ module NoOptions = {
     display(#flex),
     justifyContent(#center),
     alignItems(#center),
-    height(35->#px),
+    height(Spacing.sm_4->#px),
   ])
 
   @react.component
@@ -81,6 +90,10 @@ module NoOptions = {
     <div className> <span> {"No Options"->React.string} </span> </div>
   }
 }
+
+type selectActions<'a> = Toggle_Select | Change_Value('a) | Erase_Value
+
+type selectState = Open | Closed
 
 @react.component
 let make = (
@@ -95,13 +108,17 @@ let make = (
   ~options,
   ~value,
 ) => {
-  let (isOpen, setIsOpen) = React.useState(_ => false)
-  let toggleOpen = _ => {
-    setIsOpen(isOpen => !isOpen)
-  }
-  let onSelectChange = newValue => {
-    newValue->Js.Nullable.toOption->onChange
-  }
+  let (selectState, setSelectState) = React.useState(_ => Closed)
+
+  let rec onSelectAction = actionType =>
+    switch actionType {
+    | Toggle_Select => setSelectState(st => st == Open ? Closed : Open)
+    | Change_Value(newValue) => {
+        onSelectAction(Toggle_Select)
+        newValue->Js.Nullable.toOption->onChange
+      }
+    | Erase_Value => None->onChange
+    }
 
   let components = React.useMemo0(() =>
     ReactSelect.createComponents(
@@ -120,7 +137,7 @@ let make = (
                   height={200}
                   width
                   rowCount={options->Js.Array2.length}
-                  rowHeight={_ => 35}
+                  rowHeight={_ => Spacing.sm_4}
                   scrollToIndex={focusedOptionIndex > 0 ? focusedOptionIndex : 0}
                   rowRenderer={({index, style}) => {
                     <div key={index->Js.Int.toString} style={style}> {options[index]} </div>
@@ -134,10 +151,7 @@ let make = (
       ~indicatorSeparator=() => React.null,
       ~clearIndicator=() => React.null,
       ~noOptionsMessage={
-        pr => {
-          Js.log2("asdf", {pr})
-          "-------------No option"->React.string
-        }
+        _ => "No Options"->React.string
       },
       (),
     )
@@ -145,18 +159,19 @@ let make = (
 
   <div>
     <Dropdown
-      isOpen
-      onClose={toggleOpen}
+      isOpen={selectState == Open}
+      onClose={_ => onSelectAction(Toggle_Select)}
       target={<Button
-        onKeyDown={e =>
+        onKeyDown={e => {
           switch e->ReactEvent.Keyboard.key {
           | "Backspace"
           | "Escape" =>
-            onSelectChange(Js.Nullable.null)
+            onSelectAction(Erase_Value)
           | _ => ()
-          }}
+          }
+        }}
         itemRight={<ChevronDown />}
-        onClick={toggleOpen}>
+        onClick={_ => onSelectAction(Toggle_Select)}>
         {formatOptionLabel(value)}
       </Button>}>
       <ReactSelect
@@ -168,10 +183,9 @@ let make = (
         ?isClearable
         components
         formatOptionLabel
-        menuIsOpen={true}
+        menuIsOpen={selectState == Open}
         onChange={newValue => {
-          toggleOpen()
-          onSelectChange(newValue)
+          onSelectAction(Change_Value(newValue))
         }}
         options
         placeholder={"Search"->React.string}
@@ -184,9 +198,9 @@ let make = (
               provided,
               make(
                 ~width="370px",
-                ~height="35px",
+                ~height={`${Spacing.sm_4->Belt.Int.toString}px`},
                 ~flexDirection="row-reverse",
-                ~marginBottom="8px",
+                ~marginBottom={`${Spacing.sm_s}px`},
                 (),
               ),
             )

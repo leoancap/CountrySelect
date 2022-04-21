@@ -2,6 +2,7 @@
 
 import * as CssJs from "bs-css-emotion/src/CssJs.mjs";
 import * as Curry from "rescript/lib/es6/curry.js";
+import * as Theme from "../../../Styles/Theme.mjs";
 import * as React from "react";
 import * as Button from "../Button/Button.mjs";
 import * as Caml_obj from "rescript/lib/es6/caml_obj.js";
@@ -16,11 +17,11 @@ var className = CssJs.style([
       CssJs.position("absolute"),
       CssJs.marginTop({
             NAME: "px",
-            VAL: 8
+            VAL: Theme.Spacing.sm
           }),
       CssJs.borderRadius({
             NAME: "px",
-            VAL: 4
+            VAL: Theme.Radius.sm
           }),
       CssJs.backgroundColor({
             NAME: "hex",
@@ -87,11 +88,11 @@ var Dropdown = {
 var className$3 = CssJs.style([
       CssJs.height({
             NAME: "px",
-            VAL: -24
+            VAL: -Theme.Spacing.sm_4 | 0
           }),
       CssJs.height({
             NAME: "px",
-            VAL: -32
+            VAL: -Theme.Spacing.sm_4 | 0
           })
     ]);
 
@@ -100,8 +101,8 @@ function Select$DropdownIndicator(Props) {
               className: className$3
             }, React.createElement("svg", {
                   role: "presentation",
-                  height: "32",
-                  width: "32",
+                  height: String(Theme.Spacing.sm_4),
+                  width: String(Theme.Spacing.sm_4),
                   focusable: "false",
                   viewBox: "-8 -8 24 24"
                 }, React.createElement("path", {
@@ -117,18 +118,10 @@ var DropdownIndicator = {
   make: Select$DropdownIndicator
 };
 
-var className$4 = CssJs.style([
-      CssJs.display("flex"),
-      CssJs.height({
-            NAME: "px",
-            VAL: 28
-          })
-    ]);
-
 function Select$ChevronDown(Props) {
   return React.createElement("svg", {
-              height: "8",
-              width: "8",
+              height: Theme.Spacing.sm_s,
+              width: Theme.Spacing.sm_s,
               fill: "none",
               viewBox: "0 0 8 5",
               xmlns: "http://www.w3.org/2000/svg"
@@ -141,28 +134,27 @@ function Select$ChevronDown(Props) {
 }
 
 var ChevronDown = {
-  className: className$4,
   make: Select$ChevronDown
 };
 
-var className$5 = CssJs.style([
+var className$4 = CssJs.style([
       CssJs.display("flex"),
       CssJs.justifyContent("center"),
       CssJs.alignItems("center"),
       CssJs.height({
             NAME: "px",
-            VAL: 35
+            VAL: Theme.Spacing.sm_4
           })
     ]);
 
 function Select$NoOptions(Props) {
   return React.createElement("div", {
-              className: className$5
+              className: className$4
             }, React.createElement("span", undefined, "No Options"));
 }
 
 var NoOptions = {
-  className: className$5,
+  className: className$4,
   make: Select$NoOptions
 };
 
@@ -178,13 +170,27 @@ function Select(Props) {
   var options = Props.options;
   var value = Props.value;
   var match = React.useState(function () {
-        return false;
+        return /* Closed */1;
       });
-  var setIsOpen = match[1];
-  var toggleOpen = function (param) {
-    return Curry._1(setIsOpen, (function (isOpen) {
-                  return !isOpen;
-                }));
+  var setSelectState = match[1];
+  var selectState = match[0];
+  var onSelectAction = function (actionType) {
+    if (typeof actionType === "number") {
+      if (actionType !== 0) {
+        return Curry._1(onChange, undefined);
+      } else {
+        return Curry._1(setSelectState, (function (st) {
+                      if (st === /* Open */0) {
+                        return /* Closed */1;
+                      } else {
+                        return /* Open */0;
+                      }
+                    }));
+      }
+    } else {
+      onSelectAction(/* Toggle_Select */0);
+      return Curry._1(onChange, Caml_option.nullable_to_opt(actionType._0));
+    }
   };
   var components = React.useMemo((function () {
           return ReactSelect.createComponents((function (param) {
@@ -207,7 +213,7 @@ function Select(Props) {
                                                                   }, Caml_array.get(options, index));
                                                       }),
                                                     rowHeight: (function (param) {
-                                                        return 35;
+                                                        return Theme.Spacing.sm_4;
                                                       }),
                                                     height: 200,
                                                     scrollToIndex: focusedOptionIndex > 0 ? focusedOptionIndex : 0,
@@ -223,28 +229,26 @@ function Select(Props) {
                         return React.createElement(Select$DropdownIndicator, {});
                       }), (function (param) {
                         return null;
-                      }), (function (pr) {
-                        console.log("asdf", pr);
-                        return "-------------No option";
+                      }), (function (param) {
+                        return "No Options";
                       }), undefined);
         }), []);
   var tmp = {
     components: components,
     formatOptionLabel: formatOptionLabel,
-    menuIsOpen: true,
+    menuIsOpen: selectState === /* Open */0,
     onChange: (function (newValue) {
-        Curry._1(setIsOpen, (function (isOpen) {
-                return !isOpen;
-              }));
-        return Curry._1(onChange, (newValue == null) ? undefined : Caml_option.some(newValue));
+        return onSelectAction(/* Change_Value */{
+                    _0: newValue
+                  });
       }),
     options: options,
     placeholder: "Search",
     styles: {
       control: (function (provided) {
           return Object.assign({}, provided, {
-                      height: "35px",
-                      marginBottom: "8px",
+                      height: String(Theme.Spacing.sm_4) + "px",
+                      marginBottom: Theme.Spacing.sm_s + "px",
                       width: "370px",
                       flexDirection: "row-reverse"
                     });
@@ -279,15 +283,17 @@ function Select(Props) {
   }
   return React.createElement("div", undefined, React.createElement(Select$Dropdown, {
                   children: React.createElement(ReactSelect$1, tmp),
-                  isOpen: match[0],
+                  isOpen: selectState === /* Open */0,
                   target: React.createElement(Button.make, {
-                        onClick: toggleOpen,
+                        onClick: (function (param) {
+                            return onSelectAction(/* Toggle_Select */0);
+                          }),
                         onKeyDown: (function (e) {
                             var match = e.key;
                             switch (match) {
                               case "Backspace" :
                               case "Escape" :
-                                  return Curry._1(onChange, undefined);
+                                  return onSelectAction(/* Erase_Value */1);
                               default:
                                 return ;
                             }
@@ -295,7 +301,9 @@ function Select(Props) {
                         itemRight: React.createElement(Select$ChevronDown, {}),
                         children: Curry._1(formatOptionLabel, value)
                       }),
-                  onClose: toggleOpen
+                  onClose: (function (param) {
+                      return onSelectAction(/* Toggle_Select */0);
+                    })
                 }));
 }
 
